@@ -10,7 +10,8 @@ all: startup.o startup.elf startup.bin
 startup.o: startup.s
 	$(AS) -g -mcpu=cortex-m4 -mthumb startup.s -o startup.o
 startup.elf: startup.o
-	$(LD) -Ttext 0x8000000 startup.o -o startup.elf
+	#$(LD) -Tstm32f401.ld startup.o -o startup.elf
+	$(LD) -Tstm32f401.ld startup.o -o startup.elf
 startup.bin: startup.elf
 	$(CP) -Obinary startup.elf startup.bin
 clean:

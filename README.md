@@ -1,2 +1,2 @@
 # xmodem-bootloader
-simple bootloader for stm32 base on xmodem protocol
+A simple bootloader for stm32 base on xmodem protocol

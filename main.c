@@ -24,9 +24,7 @@ int main(void)
 	*((volatile uint32_t *)(GPIOA_BASE + 0x0C)) = 0x00;
 	while(1)
 	{
-		*((volatile uint16_t *)(GPIOA_BASE + 0x18)) = GPIO_Pin_5;
-		delay(LEDDELAY);
-		*((volatile uint16_t *)(GPIOA_BASE + 0x1A)) = GPIO_Pin_5;
+		*((volatile uint16_t *)(GPIOA_BASE + 0x14)) ^= GPIO_Pin_5;
 		delay(LEDDELAY);
 	}
 }

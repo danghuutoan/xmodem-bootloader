@@ -6,21 +6,19 @@ CP = $(TOOLCHAIN)objcopy
 LD = $(TOOLCHAIN)ld
 DUMP = $(TOOLCHAIN)objdump
 
-all: startup.o startup.elf startup.bin
+all: main.o startup.o startup.elf startup.bin
+main.o:
+	$(CC) -g -mcpu=cortex-m4 -mthumb --specs=nosys.specs main.c -o main.o
 startup.o: startup.s
 	$(AS) -g -mcpu=cortex-m4 -mthumb startup.s -o startup.o
 startup.elf: startup.o
-	#$(LD) -Tstm32f401.ld startup.o -o startup.elf
-	$(LD) -Tstm32f401.ld startup.o -o startup.elf
+	$(LD) -Tstm32f401.ld main.o startup.o -o startup.elf
 startup.bin: startup.elf
-	$(CP) -Obinary startup.elf startup.bin
+	$(CP) -O binary startup.elf startup.bin
 clean:
 	rm -f *.bin *.elf *.o *.list
 flash:
-	# st-flash write startup.bin 0x8000000
-	openocd -s /usr/share/openocd/scripts/ \
-	-f /usr/share/openocd/scripts/interface/stlink-v2-1.cfg \
-	-f /usr/share/openocd/scripts/target/stm32f4x.cfg \
+	openocd -f /usr/local/share/openocd/scripts/board/st_nucleo_f4.cfg \
 	-c init -c targets -c "halt" \
     -c "flash write_image erase startup.elf" \
     -c "verify_image startup.elf" \

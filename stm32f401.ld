@@ -15,9 +15,9 @@ SECTIONS
 
 	.text :
 	{
-	. = ALIGN(4);
-	*(.text*)
-	. = ALIGN(4);
-	_etext = .;
+		. = ALIGN(4);
+		*(.text*)
+		. = ALIGN(4);
+		_etext = .;
 	} >FLASH
 }

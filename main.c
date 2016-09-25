@@ -7,6 +7,10 @@
 #define LEDDELAY				800000
 #define GPIO_Pin_5				0x0020
 
+#define writel(address, value)		(*((volatile uint32_t *)(address)) = value)
+#define readl(address)				*((volatile uint32_t *)(address))
+#define setbits(address, bitsmask)	(*((volatile uint32_t *)(address)) |= bitsmask)
+#define clearbits(address, bitsmask)	(*((volatile uint32_t *)(address)) &= ~bitsmask)
 void delay(uint32_t count)
 {
 	volatile uint32_t tmp = count;
@@ -14,17 +18,26 @@ void delay(uint32_t count)
 	{
 	}
 }
+
+void led_init(void)
+{
+	setbits(RCC_BASE + 0x30, RCC_AHB1Periph_GPIOA);
+	clearbits(GPIOA_BASE + 0x00, 0xC00);
+	setbits(GPIOA_BASE + 0x00, 0x400);
+	writel(GPIOA_BASE + 0x0C, 0x00);
+}
+
+void led_toggle(void)
+{
+	writel(GPIOA_BASE + 0x14, readl(GPIOA_BASE + 0x14) ^ GPIO_Pin_5);
+}
+
 int main(void)
 {
-	*((volatile uint32_t *)(RCC_BASE + 0x30)) |= RCC_AHB1Periph_GPIOA;
-
-	*((volatile uint32_t *)(GPIOA_BASE + 0x00)) &= ~0xC00;
-	*((volatile uint32_t *)(GPIOA_BASE + 0x00)) |= 0x400;
-
-	*((volatile uint32_t *)(GPIOA_BASE + 0x0C)) = 0x00;
+	led_init();
 	while(1)
 	{
-		*((volatile uint16_t *)(GPIOA_BASE + 0x14)) ^= GPIO_Pin_5;
+		led_toggle();
 		delay(LEDDELAY);
 	}
 }

@@ -8,7 +8,7 @@ DUMP = $(TOOLCHAIN)objdump
 
 all: main.o startup.o startup.elf startup.bin
 main.o:
-	$(CC) -g -mcpu=cortex-m4 -mthumb --specs=nosys.specs main.c -o main.o
+	$(CC) -g -mcpu=cortex-m4 -mthumb --specs=nosys.specs -lc -Wl,-Map,main.map main.c -o main.o
 startup.o: startup.s
 	$(AS) -g -mcpu=cortex-m4 -mthumb startup.s -o startup.o
 startup.elf: startup.o
@@ -18,11 +18,11 @@ startup.bin: startup.elf
 clean:
 	rm -f *.bin *.elf *.o *.list
 flash:
-	openocd -f /usr/local/share/openocd/scripts/board/st_nucleo_f4.cfg \
+	openocd -f /usr/share/openocd/scripts/board/st_nucleo_f4.cfg \
 	-c init -c targets -c "halt" \
     -c "flash write_image erase startup.elf" \
     -c "verify_image startup.elf" \
     -c "reset run" -c shutdown
 
 deassembly:
-	$(DUMP) -S startup.elf > deassembly.list
+	$(DUMP) -D startup.elf > deassembly.list
